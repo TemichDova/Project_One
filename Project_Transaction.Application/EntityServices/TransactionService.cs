@@ -26,9 +26,9 @@ namespace Project_Transaction.Application.EntityServices
             {
                 return new CreateTransactionResponce() { InsertDateTime = entity.Created };
             }
-            var asdasd = await _transactionRepository.Count();
+            var transactionsCount = await _transactionRepository.Count();
 
-            if (asdasd >= 100)
+            if (transactionsCount >= 100)
             {
                 var oldTransactionId = await _transactionRepository.GetOldTransactionId();
 
