@@ -27,17 +27,4 @@ public sealed record ExceptionResponse
         public required string Field { get; init; }
         public required string Reason { get; init; }
     }
-
-    /*
-    "errors": [
-    {
-      "name": "username",
-      "reason": "Username is already taken."
-    },
-        {
-          "name": "email",
-          "reason": "Email format is invalid."
-        }
-      ]
-     */
 }
