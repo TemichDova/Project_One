@@ -1,0 +1,17 @@
+services:
+  postgres.CSECore:
+    container_name: test.db-core
+    image: postgres:17.4
+    environment:
+      POSTGRES_DB: "postgres.db-core"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
