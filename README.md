@@ -1,8 +1,8 @@
 # Project_Transaction
 
-Ïîäêëþ÷åíèå ê ëîêàëüíîé áàçå äàííûõ:
+ÐŸÐ¾Ð´ÐºÐ»ÑŽÑ‡ÐµÐ½Ð¸Ðµ Ðº Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ð¾Ð¹ Ð±Ð°Ð·Ðµ Ð´Ð°Ð½Ð½Ñ‹Ñ…:
 >"Host=localhost;Port=5432;Database=postgres.db-core;Username=postgres;Password=postgres";
 
-Áàçà postgreSQL 17.4, ìîæíî ðàçâåðíóòü ÷åðåç
+Ð‘Ð°Ð·Ð° postgreSQL 17.4, Ð¼Ð¾Ð¶Ð½Ð¾ Ñ€Ð°Ð·Ð²ÐµÑ€Ð½ÑƒÑ‚ÑŒ Ñ‡ÐµÑ€ÐµÐ·
 >docker-compose.yml
 
