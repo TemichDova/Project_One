@@ -5,39 +5,53 @@ using Project_Transaction.Application.Mappers;
 using Project_Transaction.Application.Models.Transaction;
 using Project_Transaction.Dal.Repositories;
 using Project_Transaction.Domain.Abstractions.Repositories.Interface;
+using System.Transactions;
 
 namespace Project_Transaction.Application.EntityServices
 {
     public sealed class TransactionService(ITransactionRepository transactionRepository, IUnitOfWork unitOfWork, IValidator<CreateTransactionRequest> сreateTransactionRequestValidator) : ITransactionService
     {
+        
         private readonly ITransactionRepository _transactionRepository = transactionRepository;
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly IValidator<CreateTransactionRequest> _сreateTransactionRequestValidator = сreateTransactionRequestValidator;
+        private readonly IValidator<CreateTransactionRequest> _createTransactionRequestValidator = сreateTransactionRequestValidator;
+        private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        public async Task<CreateTransactionResponce> CreateTransaction(CreateTransactionRequest model)
+
+        public async Task<CreateTransactionResponse> CreateTransaction(CreateTransactionRequest model)
         {
-            await _сreateTransactionRequestValidator.ValidateAndThrowAsync(model);
+            await _createTransactionRequestValidator.ValidateAndThrowAsync(model);
 
             var transaction = model.ToEntity();
-                        
-            var entity = await _transactionRepository.GetEntity(w => w.TransactionId == transaction.TransactionId);
+            await _semaphore.WaitAsync();
 
-            if(entity != null)
+            try
             {
-                return new CreateTransactionResponce() { InsertDateTime = entity.Created };
-            }
-            var transactionsCount = await _transactionRepository.Count();
+                var entity = await _transactionRepository.GetEntity(w => w.TransactionId == transaction.TransactionId);
 
-            if (transactionsCount >= 100)
+                if (entity != null)
+                {
+                    return new CreateTransactionResponse() { InsertDateTime = entity.Created };
+                }
+                var transactionsCount = await _transactionRepository.Count();
+
+                if (transactionsCount >= 100)
+                {
+                    var oldTransactionId = await _transactionRepository.GetOldTransactionId();
+
+                    await _transactionRepository.Delete(oldTransactionId);
+                }
+
+                var createEntity = await _transactionRepository.Create(transaction);
+                await _unitOfWork.SaveChangesAsync();
+
+
+                return new CreateTransactionResponse() { InsertDateTime = createEntity.Created };
+            }
+            finally
             {
-                var oldTransactionId = await _transactionRepository.GetOldTransactionId();
-
-                await _transactionRepository.Delete(oldTransactionId);
+                _semaphore.Release();
             }
-
-            var createEntity = await _transactionRepository.Create(transaction);
-            await _unitOfWork.SaveChangesAsync();
-            return new CreateTransactionResponce() { InsertDateTime = createEntity.Created };
         }
 
         public async Task<GetTransactionResponce> GetTransaction(Guid id)

@@ -14,7 +14,7 @@ public class TransactionController(ITransactionService service) : ControllerBase
     private readonly ITransactionService _transactionService = service;
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreateTransactionResponce))]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(CreateTransactionResponse))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ExceptionResponse))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ExceptionResponse))]
     public async Task<IActionResult> Index(CreateTransactionRequest transaction)
